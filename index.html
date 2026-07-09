@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en" data-weather="sunny" data-time="morning">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Weatherly — Weather, beautifully experienced. Real-time weather with immersive atmosphere." />
+  <title>Weatherly. — Weather, beautifully experienced</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@200;300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Styles -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="stylesheet" href="/src/styles/index.css" />
+
+  <!-- Main Script -->
+  <script type="module" src="/src/main.js" defer></script>
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!--  Full-screen Overlays                                  -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <canvas id="particle-canvas" aria-hidden="true"></canvas>
+  <div id="lightning-overlay" aria-hidden="true"></div>
+  <div id="ambient-overlay" aria-hidden="true"></div>
+
+  <!-- Hero Background Image -->
+  <div id="hero-bg" aria-hidden="true">
+    <img src="/images/hero-bg.png" alt="" id="hero-bg-img" />
+    <div class="hero-bg-overlay"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!--  Navigation                                            -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <nav class="nav" role="navigation" aria-label="Main navigation">
+    <div class="nav-inner">
+      <!-- Logo -->
+      <a href="/" class="nav-logo" aria-label="Weatherly Home">
+        <svg width="28" height="28" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="28" cy="28" r="16" fill="url(#sun-grad)" filter="url(#glow)" />
+          <path d="M46 52H24C17.3726 52 12 46.6274 12 40C12 34.1481 16.1837 29.2559 21.7584 28.1997C23.0189 22.4552 28.0264 18 34 18C41.732 18 48 24.268 48 32C48 32.2039 47.9956 32.4068 47.9868 32.6083C52.5186 33.4357 56 37.3879 56 42C56 47.5228 51.5228 52 46 52Z" fill="url(#cloud-grad)" filter="url(#glow)"/>
+          <defs>
+            <linearGradient id="sun-grad" x1="16" y1="16" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#FFD700" />
+              <stop offset="1" stop-color="#FF8C00" />
+            </linearGradient>
+            <linearGradient id="cloud-grad" x1="20" y1="36" x2="60" y2="60" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#FFFFFF" />
+              <stop offset="1" stop-color="#E0E6ED" />
+            </linearGradient>
+            <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="3" result="blur" />
+              <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            </filter>
+          </defs>
+        </svg>
+        Weatherly.
+      </a>
+
+      <!-- Nav Links -->
+      <div class="nav-links">
+        <a href="#hero" class="nav-link active">Home</a>
+        <a href="#forecast-section" class="nav-link">Forecast</a>
+        <a href="#exploration" class="nav-link">Explore</a>
+      </div>
+
+
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!--  Hero Section                                          -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <section id="hero" aria-label="Current weather overview">
+    <div class="hero-inner">
+      <!-- Left: Headline + Search -->
+      <div class="hero-left">
+        <h1 class="hero-headline">
+          Weather,<br/>
+          <em>beautifully</em><br/>
+          experienced.
+        </h1>
+        <p class="hero-subtitle">
+          Real-time weather. Real emotions.<br/>
+          Explore the world through atmosphere.
+        </p>
+        <div class="hero-search-bar">
+          <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input
+            type="text"
+            id="city-search"
+            placeholder="Search for a city..."
+            autocomplete="off"
+            aria-label="Search for a city"
+          />
+          <button class="search-submit-btn" aria-label="Search">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </button>
+          <!-- Search Suggestions -->
+          <div id="search-suggestions" role="listbox" aria-label="City suggestions"></div>
+        </div>
+      </div>
+
+      <!-- Right: Weather Card -->
+      <div class="hero-right">
+        <div class="weather-card glass-card">
+          <!-- Card Header -->
+          <div class="wc-header">
+            <div class="wc-location">
+              <span id="city-name" class="wc-city">—</span>
+              <svg class="wc-location-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            </div>
+            <div class="wc-greeting-area">
+              <span id="greeting-line" class="wc-greeting">Good Morning! ☀</span>
+              <span id="wc-time" class="wc-time"></span>
+            </div>
+          </div>
+          <div class="wc-date" id="wc-date"></div>
+
+          <!-- Main Temp + Icon -->
+          <div class="wc-main">
+            <div class="wc-temp-wrap">
+              <span id="current-temp" class="wc-temp">—</span>
+              <span class="wc-temp-unit">°c</span>
+            </div>
+            <div id="weather-icon-container" class="wc-icon-glow" aria-hidden="true">
+              <!-- Dynamic weather icon rendered here -->
+            </div>
+          </div>
+
+          <!-- Condition -->
+          <div class="wc-condition-row">
+            <span id="weather-desc" class="wc-condition">—</span>
+            <span id="feels-like" class="wc-feels">Feels like —°</span>
+          </div>
+
+          <!-- Stats Grid -->
+          <div class="wc-stats-grid">
+            <div class="wc-stat" id="detail-humidity">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>
+              <span class="wc-stat-label">Humidity</span>
+              <span class="wc-stat-value" data-count-target="0">—</span>
+            </div>
+            <div class="wc-stat" id="detail-wind">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"></path></svg>
+              <span class="wc-stat-label">Wind</span>
+              <span class="wc-stat-value" data-count-target="0">—</span>
+            </div>
+            <div class="wc-stat" id="detail-pressure">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg>
+              <span class="wc-stat-label">Pressure</span>
+              <span class="wc-stat-value" data-count-target="0">—</span>
+            </div>
+            <div class="wc-stat" id="detail-visibility">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              <span class="wc-stat-label">Visibility</span>
+              <span class="wc-stat-value" data-count-target="0">—</span>
+            </div>
+            <div class="wc-stat" id="detail-uv">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line></svg>
+              <span class="wc-stat-label">UV Index</span>
+              <span class="wc-stat-value" data-count-target="0">—</span>
+            </div>
+            <div class="wc-stat" id="detail-feelslike">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"></path></svg>
+              <span class="wc-stat-label">Feels Like</span>
+              <span class="wc-stat-value" data-count-target="0">—</span>
+            </div>
+          </div>
+
+          <!-- Sunrise / Sunset -->
+          <div class="wc-sun-row">
+            <div class="wc-sun-item">
+              <span class="wc-sun-label">Sunrise</span>
+              <span id="wc-sunrise" class="wc-sun-value">—</span>
+            </div>
+            <div class="wc-sun-item">
+              <span class="wc-sun-label">Sunset</span>
+              <span id="wc-sunset" class="wc-sun-value">—</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!--  Forecast Section                                      -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <section id="forecast-section" aria-label="Weather forecast">
+    <div class="forecast-inner">
+      <!-- Hourly Forecast -->
+      <div class="forecast-panel glass-card">
+        <h3 class="forecast-panel-title">HOURLY FORECAST</h3>
+        <div class="hourly-scroll" id="hourly-scroll">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- 5-Day Forecast -->
+      <div class="forecast-panel glass-card">
+        <h3 class="forecast-panel-title">5 DAY FORECAST</h3>
+        <div class="daily-list" id="daily-list">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!--  Exploration Section                                   -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <section id="exploration" aria-label="Explore destinations">
+    <div class="explore-inner">
+      <div class="explore-left">
+        <h2 class="explore-heading">
+          Explore<br/>
+          <em>Beautiful Places</em>
+        </h2>
+        <p class="explore-sub">Discover breathtaking destinations<br/>with live weather.</p>
+        <button class="explore-cta magnetic-btn" id="explore-cta-btn">
+          View All Destinations
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </button>
+      </div>
+      <div class="explore-right">
+        <div id="destination-grid" class="destination-carousel">
+          <!-- Populated dynamically -->
+        </div>
+        <div class="carousel-dots" id="carousel-dots"></div>
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!--  Footer                                                -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <footer class="footer" role="contentinfo">
+    <div class="footer-inner">
+      <div class="footer-brand-col">
+        <span class="footer-logo">Weatherly.</span>
+        <p class="footer-tagline">Weather that moves you.<br/>Made with ❤ for the world.</p>
+        <div class="footer-socials">
+          <a href="#" aria-label="Twitter"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg></a>
+          <a href="#" aria-label="Instagram"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>
+          <a href="#" aria-label="YouTube"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19.1c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.43z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg></a>
+        </div>
+      </div>
+      <div class="footer-links-col">
+        <h4>PRODUCT</h4>
+        <a href="#">Forecast</a>
+        <a href="#">Map</a>
+        <a href="#">Air Quality</a>
+        <a href="#">Weather API</a>
+      </div>
+      <div class="footer-links-col">
+        <h4>COMPANY</h4>
+        <a href="#">About Us</a>
+        <a href="#">Blog</a>
+        <a href="#">Careers</a>
+        <a href="#">Contact</a>
+      </div>
+      <div class="footer-links-col">
+        <h4>RESOURCES</h4>
+        <a href="#">Help Center</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+      </div>
+      <div class="footer-subscribe-col">
+        <h4>Stay Updated</h4>
+        <p>Get the latest weather updates<br/>and travel inspirations.</p>
+        <div class="footer-email-row">
+          <input type="email" placeholder="Enter your email" aria-label="Email address" />
+          <button aria-label="Subscribe">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 Weatherly. Weather data by Open-Meteo. Crafted with care.</p>
+    </div>
+  </footer>
+
+</body>
+</html>
