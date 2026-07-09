@@ -463,6 +463,8 @@ html[data-weather="golden"] #hero-bg-img { filter: brightness(0.5) saturate(1.4)
 .hero-left {
   flex: 1;
   max-width: 520px;
+  position: relative;
+  z-index: 10;
 }
 
 .hero-headline {
